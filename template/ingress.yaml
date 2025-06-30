@@ -1,55 +1,42 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "minio.fullname" . -}}
-{{- $servicePort := .Values.service.port -}}
+{{- $serviceName := .Values.ingress.serviceName -}} # あなたのvalues.yamlに合わせて追加
+{{- $servicePort := .Values.ingress.servicePort -}} # あなたのvalues.yamlに合わせて追加
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: {{ template "minio.ingress.apiVersion" . }}
+
+apiVersion: networking.k8s.io/v1 # Kubernetes 1.19+で推奨されるAPIバージョン
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "my-ingress-endpoint.fullname" . }} # あなたのChartのfullnameヘルパーを使用
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-    {{- with .Values.ingress.labels }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
+    {{- include "my-ingress-endpoint.labels" . | nindent 4 }} # あなたのChartのlabelsヘルパーを使用
   {{- with .Values.ingress.annotations }}
-  annotations: {{- toYaml . | nindent 4 }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.ingress.tls.enabled }} # .Values.ingress.tls.enabled を使用
   tls:
-    {{- range .Values.ingress.tls }}
     - hosts:
-      {{- range .hosts }}
+      {{- range .Values.ingress.tls.hosts }} # .Values.ingress.tls.hosts をループ
         - {{ . | quote }}
       {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+      secretName: {{ .Values.ingress.tls.secretName }} # .Values.ingress.tls.secretName を使用
   {{- end }}
   rules:
+    # 複数のホストに対応するため、ここでループを回します
     {{- range .Values.ingress.hosts }}
-    - http:
+    - host: {{ . | quote }} # 各ホスト名
+      http:
         paths:
           - path: {{ $ingressPath }}
-            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-            pathType: Prefix
+            pathType: Prefix # Kubernetes 1.19+ では常にPrefixを使用
             backend:
               service:
-                name: {{ $fullName }}
-                port: 
-                  number: {{ $servicePort }}
-            {{- else }}
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $servicePort }}
-            {{- end }}
-      {{- if . }}
-      host: {{ tpl . $ | quote }}
-      {{- end }}
+                name: {{ $serviceName }} # あなたのvalues.yamlのserviceNameを使用
+                port:
+                  number: {{ $servicePort }} # あなたのvalues.yamlのservicePortを使用
     {{- end }}
 {{- end }}
