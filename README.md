@@ -23,7 +23,7 @@ Versatile: Works with any existing Service without application dependency.
 - An installed Ingress Controller (e.g., NGINX, Traefik, AWS ALB, etc.)
 
 
-## 📦 Installation (via GitHub Pages)
+## 📦 Installation
 This chart is hosted via GitHub Pages. You can install it directly using the following commands:
 ```bash
 helm repo add ingress-endpoint https://devnekoops.github.io/ingress-endpoint/
