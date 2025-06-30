@@ -1,7 +1,7 @@
 apiVersion: v2
 description: A helm chart to deploy a simple Ingress endpoint.
-name: minio
-version: 0.0.1
+name: ingress-endpoint
+version: 0.0.2
 keywords:
   - ingress
   - endpoint
