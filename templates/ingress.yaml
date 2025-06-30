@@ -6,9 +6,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "my-ingress-endpoint.fullname" . }}
-  labels:
-    {{- include "my-ingress-endpoint.labels" . | nindent 4 }
+  name: {{ .Release.Name }}
+  labels: 
+    labels:
+    app: {{ .Release.Name }}
+    chart: {{ .Release.Name }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -17,13 +21,15 @@ spec:
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
-  {{- if .Values.ingress.tls.enabled }}
+  {{- if .Values.ingress.tls }}
   tls:
+    {{- range .Values.ingress.tls }}
     - hosts:
-      {{- range .Values.ingress.tls.hosts }}
+      {{- range .hosts }}
         - {{ . | quote }}
       {{- end }}
-      secretName: {{ .Values.ingress.tls.secretName }}
+      secretName: {{ .secretName }}
+    {{- end }}
   {{- end }}
   rules:
    
@@ -34,9 +40,8 @@ spec:
           - path: {{ $ingressPath }}
             pathType: Prefix
             backend:
-              service:
+              service: 
                 name: {{ $serviceName }}
-                port:
-                  number: {{ $servicePort }}
+                port: {{ $servicePort }}
     {{- end }}
 {{- end }}
