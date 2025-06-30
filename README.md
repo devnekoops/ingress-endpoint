@@ -97,12 +97,7 @@ helm uninstall my-ingress
 
 このプロジェクトは [Apache 2.0 License](https://www.google.com/search?q=https://github.com/devnekoops/ingress-endpoint/blob/main/LICENSE) の下でライセンスされています。
 
----
-
 -----
-
-Okay, I'll translate the README content into English for your GitHub repository `https://github.com/devnekoops/ingress-endpoint`.
-
 -----
 
 # Ingress Endpoint Helm Chart
