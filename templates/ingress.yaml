@@ -8,9 +8,8 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}
   labels: 
-    labels:
-    app: {{ .Release.Name }}
-    chart: {{ .Release.Name }}
+    app: {{ template "chart.name" . }}
+    chart: {{ template "chart.version" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   {{- with .Values.ingress.annotations }}
@@ -42,6 +41,7 @@ spec:
             backend:
               service: 
                 name: {{ $serviceName }}
-                port: {{ $servicePort }}
+                port: 
+                  number: {{ $servicePort }}
     {{- end }}
 {{- end }}
