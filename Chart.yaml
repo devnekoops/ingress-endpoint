@@ -1,7 +1,7 @@
 apiVersion: v2
 description: A helm chart to deploy a simple Ingress endpoint.
 name: ingress-endpoint
-version: 0.0.2
+version: 0.0.3
 keywords:
   - ingress
   - endpoint
