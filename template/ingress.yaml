@@ -1,14 +1,14 @@
 {{- if .Values.ingress.enabled -}}
-{{- $serviceName := .Values.ingress.serviceName -}} # あなたのvalues.yamlに合わせて追加
-{{- $servicePort := .Values.ingress.servicePort -}} # あなたのvalues.yamlに合わせて追加
+{{- $serviceName := .Values.ingress.serviceName -}}
+{{- $servicePort := .Values.ingress.servicePort -}}
 {{- $ingressPath := .Values.ingress.path -}}
 
-apiVersion: networking.k8s.io/v1 # Kubernetes 1.19+で推奨されるAPIバージョン
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "my-ingress-endpoint.fullname" . }} # あなたのChartのfullnameヘルパーを使用
+  name: {{ include "my-ingress-endpoint.fullname" . }}
   labels:
-    {{- include "my-ingress-endpoint.labels" . | nindent 4 }} # あなたのChartのlabelsヘルパーを使用
+    {{- include "my-ingress-endpoint.labels" . | nindent 4 }
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -17,26 +17,26 @@ spec:
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
-  {{- if .Values.ingress.tls.enabled }} # .Values.ingress.tls.enabled を使用
+  {{- if .Values.ingress.tls.enabled }}
   tls:
     - hosts:
-      {{- range .Values.ingress.tls.hosts }} # .Values.ingress.tls.hosts をループ
+      {{- range .Values.ingress.tls.hosts }}
         - {{ . | quote }}
       {{- end }}
-      secretName: {{ .Values.ingress.tls.secretName }} # .Values.ingress.tls.secretName を使用
+      secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
   rules:
-    # 複数のホストに対応するため、ここでループを回します
+   
     {{- range .Values.ingress.hosts }}
-    - host: {{ . | quote }} # 各ホスト名
+    - host: {{ . | quote }}
       http:
         paths:
           - path: {{ $ingressPath }}
-            pathType: Prefix # Kubernetes 1.19+ では常にPrefixを使用
+            pathType: Prefix
             backend:
               service:
-                name: {{ $serviceName }} # あなたのvalues.yamlのserviceNameを使用
+                name: {{ $serviceName }}
                 port:
-                  number: {{ $servicePort }} # あなたのvalues.yamlのservicePortを使用
+                  number: {{ $servicePort }}
     {{- end }}
 {{- end }}
